@@ -1,3 +1,4 @@
+import { routeHash, setURL } from './nav.js';
 /*
   Palettes des designs : les 42 palettes de Fondations (data/palettes.json) et
   les palettes personnalisées, dérivées en OKLCH à partir de 4 couleurs par thème
@@ -131,7 +132,7 @@ const dec = (s) => {
   if (parts.length !== 4 || !parts.every(isHex)) return null;
   return Object.fromEntries(ORDER.map((k, i) => [k, normHex(parts[i])]));
 };
-export function readPaletteQuery(hash = location.hash) {
+export function readPaletteQuery(hash = routeHash()) {
   const q = new URLSearchParams((hash.split('?')[1]) || '');
   const id = q.get('palette');
   if (!id) return null;
@@ -144,7 +145,7 @@ export function readPaletteQuery(hash = location.hash) {
   return { id };
 }
 export function writePaletteQuery(sel, def) {
-  const [path, qs] = location.hash.split('?');
+  const [path, qs] = routeHash().split('?');
   const q = new URLSearchParams(qs || '');
   ['palette', 'c', 'cd'].forEach((k) => q.delete(k));
   if (sel.id === CUSTOM) {
@@ -153,8 +154,7 @@ export function writePaletteQuery(sel, def) {
     if (sel.darkEdited) q.set('cd', enc(sel.dark));
   } else if (sel.id !== def) q.set('palette', sel.id);
   const s = q.toString();
-  const url = `${location.pathname}${location.search}${path}${s ? '?' + s : ''}`;
-  try { history.replaceState(history.state, '', url); } catch (e) { /* ignoré */ }
+  setURL(`${path}${s ? '?' + s : ''}`);
 }
 
 /* Variables par thème pour la sélection courante. */

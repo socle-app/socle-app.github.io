@@ -74,5 +74,7 @@ if (errors.length) {
 items.sort((a, b) => (b.date || '').localeCompare(a.date || '') || (a.ordre ?? 50) - (b.ordre ?? 50) || a.nom.localeCompare(b.nom, 'fr'));
 const out = { version: 1, total: items.length, items };
 await writeFile(path.join(root, 'registry', 'index.json'), JSON.stringify(out, null, 2) + '\n');
+// GitHub Pages sert 404.html pour les chemins propres (/c/modales) : copie conforme d'index.html.
+await writeFile(path.join(root, '404.html'), await readFile(path.join(root, 'index.html')));
 const nLogos = items.filter((x) => x.logo_exemple).length;
 console.log(`registry/index.json : ${items.length} design${items.length > 1 ? 's' : ''}, ${nLogos} logo${nLogos > 1 ? 's' : ''} d’exemple.`);

@@ -1,3 +1,4 @@
+import { routeHash, setURL } from '../lib/nav.js';
 /* Page catégorie : en-tête, filtres par tags, tri, grille de vignettes. */
 import { CATEGORIES } from '../../registry/categories.js';
 import { loadIndex } from '../lib/store.js';
@@ -9,7 +10,7 @@ import { openDrawer, closeDrawer } from '../lib/shell.js';
 export function cardHTML(it) {
   const cat = CATEGORIES.find((c) => c.id === it.categorie);
   const tag = (it.tags || [])[0];
-  return `<a class="shot" href="#/i/${esc(it.id)}">
+  return `<a class="shot" href="/i/${esc(it.id)}">
     ${thumbHTML(it)}
     <div class="shot__meta"><div class="tx"><b>${esc(it.nom)}${isPremium(it) ? '<span class="sr-only">, Premium</span>' : ''}</b><span>${esc(cat ? cat.nom : '')}</span></div>${tag ? `<span class="badge">${esc(tag)}</span>` : ''}</div>
   </a>`;
@@ -29,11 +30,11 @@ export async function renderCategory(view, cat) {
   const tags = [...new Set(items.flatMap((i) => i.tags || []))].sort((a, b) => a.localeCompare(b, 'fr'));
   const NIVEAUX = [{ id: 'tous', nom: 'Tous' }, { id: 'essentiel', nom: 'Essentiel' }, { id: 'premium', nom: 'Premium' }];
   const levelOf = (i) => (isPremium(i) ? 'premium' : 'essentiel');
-  const q = new URLSearchParams(location.hash.split('?')[1] || '');
+  const q = new URLSearchParams(routeHash().split('?')[1] || '');
   const state = { tags: new Set(), sort: 'recent', niveau: NIVEAUX.some((n) => n.id === q.get('niveau')) ? q.get('niveau') : 'tous' };
 
   const head = `
-    ${crumbs([{ label: 'Bibliothèque', href: '#/' }, { label: cat.sectionNom, href: '#/' }, { label: cat.nom }])}
+    ${crumbs([{ label: 'Bibliothèque', href: '/' }, { label: cat.sectionNom, href: '/' }, { label: cat.nom }])}
     <header class="phead">
       <div class="phead__title"><span class="tile">${rawIcon(cat.icon, { size: 22 })}</span><h1 class="t-page">${esc(cat.nom)}</h1></div>
       <p>${fr(cat.description)}</p>
@@ -48,7 +49,7 @@ export async function renderCategory(view, cat) {
         <h2 class="t-section">Bientôt</h2>
         <p>${fr(`Aucun design dans « ${cat.nom} » pour l’instant. Le premier s’ajoute en une commande :`)}</p>
         <span class="cmd-line"><code>${esc(cmd)}</code><button class="icon-btn copy-btn" type="button" aria-label="Copier la commande">${icon('copy', { size: 16 })}</button></span>
-        ${others.length ? `<div class="suggest">${others.map((c) => `<a class="chip" href="#/c/${c.id}">${esc(c.nom)}</a>`).join('')}</div>` : ''}
+        ${others.length ? `<div class="suggest">${others.map((c) => `<a class="chip" href="/c/${c.id}">${esc(c.nom)}</a>`).join('')}</div>` : ''}
       </div>`;
     bindCopy(view.querySelector('.copy-btn'), cmd, { toastMsg: 'Commande copiée' });
     return;
@@ -101,13 +102,13 @@ export async function renderCategory(view, cat) {
   });
   view.querySelectorAll('[data-level]').forEach((b) => b.addEventListener('click', () => {
     state.niveau = b.dataset.level;
-    history.replaceState(null, '', `#/c/${cat.id}${state.niveau === 'tous' ? '' : `?niveau=${state.niveau}`}`);
+    setURL(`/c/${cat.id}${state.niveau === 'tous' ? '' : `?niveau=${state.niveau}`}`);
     apply();
   }));
   grid.addEventListener('click', (e) => {
     if (!e.target.closest('[data-showall]')) return;
     state.niveau = 'tous'; state.tags.clear();
-    history.replaceState(null, '', `#/c/${cat.id}`);
+    setURL(`/c/${cat.id}`);
     apply();
   });
   view.querySelectorAll('[data-sort]').forEach((b) => b.addEventListener('click', () => {

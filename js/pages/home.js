@@ -25,7 +25,7 @@ export async function renderHome(view) {
       <h1 id="h-hero" class="t-display">Des fondations solides pour chaque interface.</h1>
       <p class="lead">${fr('Composants, animations et sections : un aperçu live, des props réglables et le code à copier en HTML/CSS ou React.')}</p>
       <div class="hero__actions">
-        ${first ? `<a class="btn btn--primary btn--arrow" href="#/c/${first.categorie}">Parcourir la bibliothèque${icon('arrowRight', { size: 16 })}</a>` : ''}
+        ${first ? `<a class="btn btn--primary btn--arrow" href="/c/${first.categorie}">Parcourir la bibliothèque${icon('arrowRight', { size: 16 })}</a>` : ''}
         <button class="btn btn--secondary" type="button" data-open-cmdk>${icon('search', { size: 16 })}Rechercher</button>
       </div>
       <div class="hero__stats" role="list">
@@ -62,7 +62,7 @@ export async function renderHome(view) {
                 const special = !!c.page;
                 const empty = !special && n === 0;
                 const right = special ? icon('arrowRight', { size: 16, cls: 'c' }) : `<span class="c">${empty ? 'Bientôt' : n}</span>`;
-                return `<li><a class="cat-row ${empty ? 'is-empty' : ''}" href="#/c/${c.id}"><span class="tile">${rawIcon(c.icon, { size: 18 })}</span><span class="nm">${esc(c.nom)}</span>${right}</a></li>`;
+                return `<li><a class="cat-row ${empty ? 'is-empty' : ''}" href="/c/${c.id}"><span class="tile">${rawIcon(c.icon, { size: 18 })}</span><span class="nm">${esc(c.nom)}</span>${right}</a></li>`;
               }).join('')}
             </ul>
           </div>`).join('')}
@@ -72,7 +72,7 @@ export async function renderHome(view) {
     <section class="block" aria-labelledby="h-brands">
       <div class="block__head">
         <div><h2 id="h-brands" class="t-section">Marques</h2><p class="muted t-sm">Logos, icônes d’app et palettes de chaque projet.</p></div>
-        <a class="link-more btn--arrow" href="#/marques">Toutes les marques${icon('arrowRight', { size: 16 })}</a>
+        <a class="link-more btn--arrow" href="/marques">Toutes les marques${icon('arrowRight', { size: 16 })}</a>
       </div>
       ${brandShowcase()}
     </section>

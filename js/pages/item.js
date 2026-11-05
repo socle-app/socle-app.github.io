@@ -85,7 +85,7 @@ export async function renderItem(view, id, onCat) {
     if (known.length && !local && !known.some((i) => i.id === id)) throw new Error('meta');
     meta = await loadMeta(id);
   } catch (e) {
-    view.innerHTML = `<div class="empty" style="margin-top:24px"><h1 class="t-section">Ce design n’existe pas</h1><p>Il a peut-être été renommé. Cherchez-le avec ⌘K.</p><a class="btn btn--secondary" href="#/">Vue d’ensemble</a></div>`;
+    view.innerHTML = `<div class="empty" style="margin-top:24px"><h1 class="t-section">Ce design n’existe pas</h1><p>Il a peut-être été renommé. Cherchez-le avec ⌘K.</p><a class="btn btn--secondary" href="/">Vue d’ensemble</a></div>`;
     return;
   }
   const cat = getCategory(meta.categorie);
@@ -113,7 +113,7 @@ export async function renderItem(view, id, onCat) {
   const sources = await Promise.all(tabs.map((t) => loadCode(meta.id, t.file).catch(() => '/* Fichier introuvable */')));
 
   view.innerHTML = `
-    ${crumbs([{ label: 'Bibliothèque', href: '#/' }, { label: cat ? cat.nom : meta.categorie, href: `#/c/${meta.categorie}` }, { label: meta.nom }])}
+    ${crumbs([{ label: 'Bibliothèque', href: '/' }, { label: cat ? cat.nom : meta.categorie, href: `/c/${meta.categorie}` }, { label: meta.nom }])}
     <header class="dhead">
       <div class="dhead__tx">
         <h1 class="t-page">${esc(meta.nom)}</h1>
@@ -182,8 +182,8 @@ export async function renderItem(view, id, onCat) {
     </div>
 
     ${prev || next ? `<nav class="pager" aria-label="Dans la catégorie">
-      ${prev ? `<a class="prev" href="#/i/${esc(prev.id)}"><span>${icon('arrowLeft', { size: 14 })}Précédent</span><b>${esc(prev.nom)}</b></a>` : '<span></span>'}
-      ${next ? `<a class="next" href="#/i/${esc(next.id)}"><span>Suivant${icon('arrowRight', { size: 14 })}</span><b>${esc(next.nom)}</b></a>` : ''}
+      ${prev ? `<a class="prev" href="/i/${esc(prev.id)}"><span>${icon('arrowLeft', { size: 14 })}Précédent</span><b>${esc(prev.nom)}</b></a>` : '<span></span>'}
+      ${next ? `<a class="next" href="/i/${esc(next.id)}"><span>Suivant${icon('arrowRight', { size: 14 })}</span><b>${esc(next.nom)}</b></a>` : ''}
     </nav>` : ''}
   `;
 

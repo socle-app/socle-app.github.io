@@ -1,4 +1,5 @@
-/* Socle — point d'entrée : routeur par hash (#/…), compatible sous-chemin. */
+import { routeHash, navigate, toURL } from './lib/nav.js';
+/* Socle — point d'entrée : routeur par chemins propres (js/lib/nav.js). */
 import { renderBar, setBarActive, treeHTML, bindTree, setActiveCat } from './lib/shell.js';
 import { bindCmdk } from './lib/cmdk.js';
 import { setTheme, hasStoredTheme } from './lib/store.js';
@@ -36,13 +37,13 @@ async function withPage(render) {
 }
 
 function notFound(view, what = 'Cette page') {
-  view.innerHTML = `<div class="empty" style="margin-top:24px"><h1 class="t-section">${esc(what)} n’existe pas</h1><p>Le lien est peut-être ancien. Repartez de la vue d’ensemble ou cherchez avec ⌘K.</p><a class="btn btn--secondary" href="#/">Vue d’ensemble</a></div>`;
+  view.innerHTML = `<div class="empty" style="margin-top:24px"><h1 class="t-section">${esc(what)} n’existe pas</h1><p>Le lien est peut-être ancien. Repartez de la vue d’ensemble ou cherchez avec ⌘K.</p><a class="btn btn--secondary" href="/">Vue d’ensemble</a></div>`;
 }
 
 async function route() {
   if (typeof cleanup === 'function') { try { cleanup(); } catch (e) {} }
   cleanup = null;
-  const hash = location.hash.replace(/^#/, '') || '/';
+  const hash = routeHash().replace(/^#/, '') || '/';
   const parts = hash.split('?')[0].split('/').filter(Boolean).map(decodeURIComponent);
   window.scrollTo(0, 0);
 
@@ -54,7 +55,7 @@ async function route() {
     } else if (parts[0] === 'c' && parts[1]) {
       const cat = getCategory(parts[1]);
       setBarActive(cat && cat.section === 'fondations' ? 'fondations' : 'home');
-      if (cat && cat.page === 'marques') { location.replace('#/marques'); return; }
+      if (cat && cat.page === 'marques') { navigate('/marques', true); return; }
       cleanup = await withShell(parts[1], (view) => {
         if (!cat) return notFound(view, 'Cette catégorie');
         document.title = `${cat.nom} — Socle`;
@@ -84,7 +85,7 @@ async function route() {
   } catch (err) {
     console.error(err);
     const view = document.getElementById('view') || app;
-    view.innerHTML = `<div class="empty" style="margin-top:24px"><h1 class="t-section">Impossible d’afficher cette page</h1><p>${esc(err.message || '')}</p><a class="btn btn--secondary" href="#/">Vue d’ensemble</a></div>`;
+    view.innerHTML = `<div class="empty" style="margin-top:24px"><h1 class="t-section">Impossible d’afficher cette page</h1><p>${esc(err.message || '')}</p><a class="btn btn--secondary" href="/">Vue d’ensemble</a></div>`;
   }
   const main = document.getElementById('contenu');
   if (main && document.activeElement === document.body && route.count++ > 0) main.focus({ preventScroll: true });
@@ -97,7 +98,7 @@ function setSideActive(catId) {
   const side = app.querySelector('.side');
   if (!side) return;
   side.querySelectorAll('.tree__link').forEach((a) => {
-    if (a.getAttribute('href') === `#/c/${catId}`) a.setAttribute('aria-current', 'page');
+    if (a.getAttribute('href') === `/c/${catId}`) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
   });
   const cur = side.querySelector('[aria-current="page"]');
@@ -115,5 +116,6 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
 
 renderBar();
 bindCmdk();
-window.addEventListener('hashchange', route);
+window.addEventListener('socle:route', route);
+window.addEventListener('hashchange', () => { if (location.hash.startsWith('#/')) { history.replaceState(null, '', toURL(location.hash)); route(); } });
 route();

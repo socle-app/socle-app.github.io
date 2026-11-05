@@ -3,7 +3,7 @@
 La bibliothèque de design de Moha : composants, animations, sections de page, templates et marques. Chaque design a un aperçu live, des props réglables et son code à copier en **HTML + CSS** et **React + Tailwind**.
 
 - Site 100 % statique : HTML, CSS et JavaScript en modules ES, **aucune étape de build**.
-- Routeur par hash (`#/…`) et chemins relatifs : fonctionne servi sous un sous-chemin (`/socle/`).
+- Chemins propres (`/c/modales`) : `js/lib/nav.js` + `404.html` (copie d'index.html générée par `build-index.mjs`) + `<base href="/">`. Les anciens liens `#/…` sont convertis.
 - Deux niveaux : **Essentiel** (par défaut) et **Premium** (champ `niveau` de `meta.json`), signalés par un badge discret et filtrables dans chaque catégorie. Le code des designs Premium reste visible pour l’instant.
 - Design system Studio : Geist et Geist Mono, neutres à 90 %, accent Terracotta, grille de 8 px, clair et sombre AA.
 
@@ -60,15 +60,15 @@ Le détail est dans [CONTRIBUTING.md](CONTRIBUTING.md).
 ## En local
 
 ```bash
-node scripts/serve.mjs        # http://localhost:4000/socle/
+node scripts/serve.mjs        # http://localhost:4000/
 ```
 
-Le serveur imite GitHub Pages : site sous `/socle/` et en-tête `Access-Control-Allow-Origin: *`. Les démos tournent dans une iframe `sandbox="allow-scripts"` (origine isolée) ; cet en-tête leur permet de charger les polices et leur fichier de code. Node 18 ou plus, aucune dépendance.
+Le serveur imite GitHub Pages : site à la racine, URL inconnue → `404.html` et en-tête `Access-Control-Allow-Origin: *`. Les démos tournent dans une iframe `sandbox="allow-scripts"` (origine isolée) ; cet en-tête leur permet de charger les polices et leur fichier de code. Node 18 ou plus, aucune dépendance.
 
 ## Déploiement sur GitHub Pages
 
 1. Créer le dépôt `socle` et pousser la branche `main`.
 2. *Settings → Pages* : source « Deploy from a branch », branche `main`, dossier `/ (root)`.
-3. Le site est publié sur `https://<compte>.github.io/socle/`.
+3. Le site est publié sur `https://socle-app.github.io/` (organisation socle-app, dépôt socle-app.github.io).
 
 Le fichier `.nojekyll` désactive Jekyll pour que tous les dossiers soient servis tels quels. Penser à lancer `node scripts/build-index.mjs` avant chaque commit qui ajoute ou modifie un design.

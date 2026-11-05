@@ -319,7 +319,7 @@ function openPalPicker(anchor, opts, currentKey, onPick, title = 'Palette', { re
   const cur = el.querySelector('[data-key][aria-checked="true"]') || (isCustom ? el.querySelector('[data-ch]') : null) || el.querySelector('[data-key]');
   if (cur) { cur.focus({ preventScroll: true }); if (cur.dataset.key && !OWN_GROUPS.includes(cur.closest('[data-group]')?.dataset.group || '')) cur.scrollIntoView({ block: 'nearest' }); }
 }
-window.addEventListener('hashchange', closePop);
+window.addEventListener('socle:route', closePop);
 
 /* Vitrine utilisée sur l'accueil et la liste des marques. */
 export function brandShowcase() {
@@ -328,7 +328,7 @@ export function brandShowcase() {
     const { items } = logosOf(b.id);
     const shown = (b.vitrine || []).map((id) => items.find((x) => x.id === id)).filter(Boolean).slice(0, 4);
     while (shown.length < 4 && items[shown.length]) shown.push(items[shown.length]);
-    return `<a class="brand-card${b.id === IDEES ? ' brand-card--idees' : ''}" href="#/marques/${esc(b.id)}">
+    return `<a class="brand-card${b.id === IDEES ? ' brand-card--idees' : ''}" href="/marques/${esc(b.id)}">
       <div class="brand-card__show" aria-hidden="true">${shown.map((it) => `<div class="cell">${art(it, 'svg_app', ownPals(it)[0], theme, it.nom)}</div>`).join('')}</div>
       <div class="brand-card__body">
         <div class="row"><b class="strong">${esc(b.nom)}</b><span class="t-xs muted num">${items.length}\u00A0${unitOf(b.id, items.length)}</span></div>
@@ -343,7 +343,7 @@ export async function renderBrands(view) {
   document.title = 'Marques — Socle';
   await ready();
   view.innerHTML = `
-    ${crumbs([{ label: 'Bibliothèque', href: '#/' }, { label: 'Fondations', href: '#/' }, { label: 'Marques' }])}
+    ${crumbs([{ label: 'Bibliothèque', href: '/' }, { label: 'Fondations', href: '/' }, { label: 'Marques' }])}
     <header class="phead"><h1 class="t-page">Marques</h1><p>${fr('Chaque projet, ses pistes de logo, ses icônes d’app et ses palettes. Clair et sombre, fiches techniques, SVG et PNG prêts à l’emploi. « Idées de logos » réunit les marques fictives créées pour les exemples de designs.')}</p></header>
     ${brandShowcase()}`;
   const onTheme = () => { const g = view.querySelector('.brand-grid'); if (g) g.outerHTML = brandShowcase(); };
@@ -358,7 +358,7 @@ export async function renderBrand(view, bid) {
   await ready();
   const b = brands().find((x) => x.id === bid);
   if (!b) {
-    view.innerHTML = `<div class="empty" style="margin-top:24px"><h1 class="t-section">Marque introuvable</h1><a class="btn btn--secondary" href="#/marques">Toutes les marques</a></div>`;
+    view.innerHTML = `<div class="empty" style="margin-top:24px"><h1 class="t-section">Marque introuvable</h1><a class="btn btn--secondary" href="/marques">Toutes les marques</a></div>`;
     return;
   }
   document.title = `${b.nom} — Marques — Socle`;
@@ -375,10 +375,10 @@ export async function renderBrand(view, bid) {
   /* Idées de logos : un secteur par marque fictive, trop nombreux pour des onglets → liste déroulante. */
   const usedCats = categories.filter((c) => items.some((it) => it.categorie === c));
   const catSel = isIdeas && usedCats.length > 8;
-  const origin = (it) => (it.origines || []).map((o) => `<a href="#/i/${esc(o.id)}">${esc(o.nom)}</a>`).join(', ');
+  const origin = (it) => (it.origines || []).map((o) => `<a href="/i/${esc(o.id)}">${esc(o.nom)}</a>`).join(', ');
 
   view.innerHTML = `
-    ${crumbs([{ label: 'Bibliothèque', href: '#/' }, { label: 'Marques', href: '#/marques' }, { label: b.nom }])}
+    ${crumbs([{ label: 'Bibliothèque', href: '/' }, { label: 'Marques', href: '/marques' }, { label: b.nom }])}
     <header class="phead">
       <h1 class="t-page">${esc(b.nom)}</h1>
       <p>${fr(b.baseline)}</p>
@@ -411,7 +411,7 @@ export async function renderBrand(view, bid) {
 
   function card(it) {
     const o = pickPal(it, keyOf(it));
-    const sheet = `#/marques/${esc(bid)}/${esc(it.id)}`;
+    const sheet = `/marques/${esc(bid)}/${esc(it.id)}`;
     const { adjusted } = logoVars(o.pal, state.theme, shared.safe);
     return `<article class="logo-card${it.origines ? ' logo-card--idee' : ''}" data-id="${esc(it.id)}">
       <a class="logo-card__art" href="${sheet}" aria-label="Fiche technique : ${esc(it.nom)}">${art(it, 'svg_logo', o.pal, state.theme, `Logo ${b.nom}, piste ${it.nom}`, shared.safe)}
@@ -425,7 +425,7 @@ export async function renderBrand(view, bid) {
         <button class="palbtn palbtn--sm" type="button" aria-haspopup="dialog" aria-expanded="false" data-pick aria-label="Palette : ${esc(o.nom)}">${dot(o.pal)}<span>${esc(o.nom)}</span>${icon('chevronDown', { size: 14 })}</button>
         <div class="logo-card__actions">
           <button class="icon-btn" type="button" data-copy="svg_logo" aria-label="Copier le SVG du logo" title="Copier le SVG du logo">${icon('copy', { size: 16 })}</button>
-          ${it.origines ? `<a class="icon-btn" href="#/i/${esc(it.origines[0].id)}" aria-label="Voir le design d’origine : ${esc(it.origines[0].nom)}" title="Design d’origine : ${esc(it.origines[0].nom)}">${icon('arrowUpRight', { size: 16 })}</a>` : ''}
+          ${it.origines ? `<a class="icon-btn" href="/i/${esc(it.origines[0].id)}" aria-label="Voir le design d’origine : ${esc(it.origines[0].nom)}" title="Design d’origine : ${esc(it.origines[0].nom)}">${icon('arrowUpRight', { size: 16 })}</a>` : ''}
           <a class="btn btn--ghost btn--sm btn--arrow" href="${sheet}">Fiche${icon('arrowRight', { size: 14 })}</a>
         </div>
       </div>
@@ -438,7 +438,7 @@ export async function renderBrand(view, bid) {
     const o = pickPal(it, keyOf(it));
     feat.innerHTML = `<section class="sec" aria-labelledby="h-ret" style="margin-bottom:40px">
       <div class="block__head" style="margin-bottom:12px"><div><h2 id="h-ret" class="t-section">Logo retenu · ${esc(it.nom)}</h2><p class="sub muted t-sm" style="margin-top:4px">${fr(it.idee || '')}</p></div>
-        <a class="btn btn--secondary btn--arrow" href="#/marques/${esc(bid)}/${esc(it.id)}">Fiche technique${icon('arrowRight', { size: 16 })}</a></div>
+        <a class="btn btn--secondary btn--arrow" href="/marques/${esc(bid)}/${esc(it.id)}">Fiche technique${icon('arrowRight', { size: 16 })}</a></div>
       <div class="feature">
         <div class="art">${art(it, 'svg_logo', o.pal, 'light', `${b.nom}, version claire`, shared.safe)}</div>
         <div class="art">${art(it, 'svg_logo', o.pal, 'dark', `${b.nom}, version sombre`, shared.safe)}</div>
@@ -557,7 +557,7 @@ export async function renderLogoSheet(view, bid, lid) {
   const { items } = logosOf(bid);
   const it = items.find((x) => x.id === lid);
   if (!b || !it) {
-    view.innerHTML = `<div class="empty" style="margin-top:24px"><h1 class="t-section">Logo introuvable</h1><a class="btn btn--secondary" href="#/marques/${esc(bid)}">Retour à la marque</a></div>`;
+    view.innerHTML = `<div class="empty" style="margin-top:24px"><h1 class="t-section">Logo introuvable</h1><a class="btn btn--secondary" href="/marques/${esc(bid)}">Retour à la marque</a></div>`;
     return;
   }
   document.title = `${it.nom} — ${b.nom} — Socle`;
@@ -582,7 +582,7 @@ export async function renderLogoSheet(view, bid, lid) {
     const rows = keys.map((kk) => `<tr><td><code>--${kk === 'bg' ? 'bg' : kk}</code></td><td class="muted">${esc(ROLES[kk][1])}</td>${cell(L, kk, L.v.bg)}${cell(D, kk, D.v.bg)}</tr>`).join('');
     const dl = (kind, theme, fmt, lbl) => `<button class="btn btn--secondary btn--sm" type="button" data-dl="${kind}|${theme}|${fmt}">${icon('download', { size: 16 })}${esc(lbl)}</button>`;
     return `
-    ${crumbs([{ label: 'Marques', href: '#/marques' }, { label: b.nom, href: `#/marques/${esc(bid)}` }, { label: it.nom }])}
+    ${crumbs([{ label: 'Marques', href: '/marques' }, { label: b.nom, href: `/marques/${esc(bid)}` }, { label: it.nom }])}
     <header class="dhead">
       <div class="dhead__tx">
         <div class="phead__meta"><span class="eyebrow">Fiche technique · ${esc(it.num)}</span>${/retenu/i.test(it.categorie || '') ? '<span class="badge badge--accent">Logo retenu</span>' : ''}</div>
@@ -591,7 +591,7 @@ export async function renderLogoSheet(view, bid, lid) {
       </div>
       <div class="sheet-actions">
         <button class="palbtn" type="button" aria-haspopup="dialog" aria-expanded="false" data-pick aria-label="Palette : ${esc(o.nom)}">${dot(o.pal)}<span>${esc(o.nom)}</span>${icon('chevronDown', { size: 16 })}</button>
-        ${it.origines ? `<a class="btn btn--secondary btn--arrow" href="#/i/${esc(it.origines[0].id)}">Design d’origine${icon('arrowUpRight', { size: 16 })}</a>` : ''}
+        ${it.origines ? `<a class="btn btn--secondary btn--arrow" href="/i/${esc(it.origines[0].id)}">Design d’origine${icon('arrowUpRight', { size: 16 })}</a>` : ''}
         <button class="btn btn--primary btn--arrow" type="button" data-copysvg>${icon('copy', { size: 16 })}Copier le SVG</button>
       </div>
     </header>
@@ -617,7 +617,7 @@ export async function renderLogoSheet(view, bid, lid) {
           <dt>Catégorie</dt><dd>${esc(it.categorie || '—')}</dd>
           <dt>Forme</dt><dd>${esc(it.forme || 'Pictogramme + mot-symbole')}</dd>
           <dt>${it.origines ? 'Statut' : 'Ton'}</dt><dd>${esc(it.ton || '—')}</dd>
-          ${it.origines ? `<dt>Vu dans</dt><dd>${it.origines.map((o) => `<a href="#/i/${esc(o.id)}">${esc(o.nom)}</a>`).join(', ')}</dd>` : ''}
+          ${it.origines ? `<dt>Vu dans</dt><dd>${it.origines.map((o) => `<a href="/i/${esc(o.id)}">${esc(o.nom)}</a>`).join(', ')}</dd>` : ''}
         </dl>
       </section>
       <section class="fact"><h3>${icon('maximize', { size: 18 })}Protection et taille minimale</h3>
@@ -653,8 +653,8 @@ export async function renderLogoSheet(view, bid, lid) {
     </div>
 
     ${prev || next ? `<nav class="pager" aria-label="${bid === IDEES ? 'Idées de logos' : `Pistes de ${esc(b.nom)}`}">
-      ${prev ? `<a class="prev" href="#/marques/${esc(bid)}/${esc(prev.id)}"><span>${icon('arrowLeft', { size: 14 })}Précédent</span><b>${esc(prev.nom)}</b></a>` : '<span></span>'}
-      ${next ? `<a class="next" href="#/marques/${esc(bid)}/${esc(next.id)}"><span>Suivant${icon('arrowRight', { size: 14 })}</span><b>${esc(next.nom)}</b></a>` : ''}
+      ${prev ? `<a class="prev" href="/marques/${esc(bid)}/${esc(prev.id)}"><span>${icon('arrowLeft', { size: 14 })}Précédent</span><b>${esc(prev.nom)}</b></a>` : '<span></span>'}
+      ${next ? `<a class="next" href="/marques/${esc(bid)}/${esc(next.id)}"><span>Suivant${icon('arrowRight', { size: 14 })}</span><b>${esc(next.nom)}</b></a>` : ''}
     </nav>` : ''}`;
   }
   const paint = () => { view.innerHTML = html(); };

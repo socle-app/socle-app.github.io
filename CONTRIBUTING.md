@@ -75,7 +75,7 @@ Règles du design system à respecter : couleurs uniquement par variables de `to
 
 ```bash
 node scripts/build-index.mjs   # vérifie les fiches (dont « niveau ») et régénère registry/index.json
-node scripts/serve.mjs         # contrôle sur http://localhost:4000/socle/
+node scripts/serve.mjs         # contrôle sur http://localhost:4000/
 git add registry && git commit -m "Ajout : <nom>" && git push
 ```
 

@@ -1,3 +1,4 @@
+import { navigate } from './nav.js';
 /* Palette de commandes ⌘K : items, catégories, marques, pages. */
 import { CATEGORIES } from '../../registry/categories.js';
 import { icon, rawIcon } from './icons.js';
@@ -41,12 +42,12 @@ async function sources() {
   const out = [];
   items.forEach((it) => {
     const cat = CATEGORIES.find((c) => c.id === it.categorie);
-    out.push({ group: 'Designs', title: it.nom, sub: `${cat ? cat.nom : ''} · ${it.description || ''}`, hay: `${it.nom} ${(it.tags || []).join(' ')} ${cat ? cat.nom : ''} ${it.description || ''}`, href: `#/i/${it.id}`, ic: cat ? rawIcon(cat.icon, { size: 18 }) : icon('package', { size: 18 }) });
+    out.push({ group: 'Designs', title: it.nom, sub: `${cat ? cat.nom : ''} · ${it.description || ''}`, hay: `${it.nom} ${(it.tags || []).join(' ')} ${cat ? cat.nom : ''} ${it.description || ''}`, href: `/i/${it.id}`, ic: cat ? rawIcon(cat.icon, { size: 18 }) : icon('package', { size: 18 }) });
   });
-  CATEGORIES.forEach((c) => out.push({ group: 'Catégories', title: c.nom, sub: `${c.sectionNom} · ${c.description}`, hay: `${c.nom} ${c.sectionNom} ${c.description}`, href: `#/c/${c.id}`, ic: rawIcon(c.icon, { size: 18 }) }));
-  (window.BRANDS || []).forEach((b) => out.push({ group: 'Marques', title: b.nom, sub: b.baseline, hay: `${b.nom} ${b.baseline} logo marque`, href: `#/marques/${b.id}`, ic: icon('book', { size: 18 }) }));
+  CATEGORIES.forEach((c) => out.push({ group: 'Catégories', title: c.nom, sub: `${c.sectionNom} · ${c.description}`, hay: `${c.nom} ${c.sectionNom} ${c.description}`, href: `/c/${c.id}`, ic: rawIcon(c.icon, { size: 18 }) }));
+  (window.BRANDS || []).forEach((b) => out.push({ group: 'Marques', title: b.nom, sub: b.baseline, hay: `${b.nom} ${b.baseline} logo marque`, href: `/marques/${b.id}`, ic: icon('book', { size: 18 }) }));
   out.push({ group: 'Actions', title: 'Changer de thème', sub: 'Clair ou sombre', hay: 'theme clair sombre mode nuit', action: () => setTheme(currentTheme() === 'dark' ? 'light' : 'dark'), ic: icon('moon', { size: 18 }) });
-  out.push({ group: 'Actions', title: 'Toutes les marques', sub: 'Logos, palettes et icônes', hay: 'marques logos', href: '#/marques', ic: icon('book', { size: 18 }) });
+  out.push({ group: 'Actions', title: 'Toutes les marques', sub: 'Logos, palettes et icônes', hay: 'marques logos', href: '/marques', ic: icon('book', { size: 18 }) });
   return out;
 }
 
@@ -89,7 +90,7 @@ function choose(i) {
   if (!r) return;
   close();
   if (r.action) r.action();
-  else location.hash = r.href.slice(1);
+  else navigate(r.href);
 }
 
 export function open() {

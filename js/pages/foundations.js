@@ -34,7 +34,7 @@ let palP = null;
 const palettes = () => (palP ||= fetch('data/palettes.json').then((r) => r.json()));
 
 function head(cat, extra = '') {
-  return `${crumbs([{ label: 'Bibliothèque', href: '#/' }, { label: 'Fondations', href: '#/' }, { label: cat.nom }])}
+  return `${crumbs([{ label: 'Bibliothèque', href: '/' }, { label: 'Fondations', href: '/' }, { label: cat.nom }])}
   <header class="phead">
     <div class="phead__title"><span class="tile">${rawIcon(cat.icon, { size: 22 })}</span><h1 class="t-page">${esc(cat.nom)}</h1></div>
     <p>${fr(cat.description)}</p>${extra}

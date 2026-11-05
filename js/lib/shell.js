@@ -9,14 +9,14 @@ export function renderBar() {
   bar.innerHTML = `
     <div class="bar__in">
       <button class="icon-btn icon-btn--touch menu-btn only-mobile" type="button" aria-label="Ouvrir la navigation" data-open-nav>${icon('menu')}</button>
-      <a class="brand" href="#/" aria-label="Socle, accueil">
+      <a class="brand" href="/" aria-label="Socle, accueil">
         <img class="logo-light" src="assets/logo.svg" width="83" height="22" alt="Socle">
         <img class="logo-dark" src="assets/logo-dark.svg" width="83" height="22" alt="Socle">
       </a>
       <nav class="bar__nav" aria-label="Principale">
-        <a href="#/" data-nav="home">Bibliothèque</a>
-        <a href="#/c/couleurs" data-nav="fondations">Fondations</a>
-        <a href="#/marques" data-nav="marques">Marques</a>
+        <a href="/" data-nav="home">Bibliothèque</a>
+        <a href="/c/couleurs" data-nav="fondations">Fondations</a>
+        <a href="/marques" data-nav="marques">Marques</a>
       </nav>
       <span class="bar__spacer"></span>
       <button class="search-trigger" type="button" data-open-cmdk aria-label="Rechercher (Commande K)">
@@ -59,7 +59,7 @@ export async function treeHTML(activeCat = '', { idPrefix = 't' } = {}) {
   const counts = await countsByCategory();
   const closed = collapsedSet();
   return `<nav class="tree" aria-label="Catégories">
-    <a class="tree__home" href="#/" ${activeCat === '__home' ? 'aria-current="page"' : ''}>${icon('layers', { size: 18 })}Vue d’ensemble</a>
+    <a class="tree__home" href="/" ${activeCat === '__home' ? 'aria-current="page"' : ''}>${icon('layers', { size: 18 })}Vue d’ensemble</a>
     ${SECTIONS.map((s) => {
       const open = !closed.has(s.id) || s.categories.some((c) => c.id === activeCat);
       const lid = `${idPrefix}-${s.id}`;
@@ -70,7 +70,7 @@ export async function treeHTML(activeCat = '', { idPrefix = 't' } = {}) {
             const n = counts[c.id] || 0;
             const special = !!c.page;
             const empty = !special && n === 0;
-            return `<li><a class="tree__link ${empty ? 'is-empty' : ''}" href="#/c/${c.id}" ${c.id === activeCat ? 'aria-current="page"' : ''}>${rawIcon(c.icon, { size: 18 })}<span>${esc(c.nom)}</span>${special || !n ? '' : `<span class="c" aria-label="${n} design${n > 1 ? 's' : ''}">${n}</span>`}</a></li>`;
+            return `<li><a class="tree__link ${empty ? 'is-empty' : ''}" href="/c/${c.id}" ${c.id === activeCat ? 'aria-current="page"' : ''}>${rawIcon(c.icon, { size: 18 })}<span>${esc(c.nom)}</span>${special || !n ? '' : `<span class="c" aria-label="${n} design${n > 1 ? 's' : ''}">${n}</span>`}</a></li>`;
           }).join('')}
         </ul>
       </div>`;
@@ -158,4 +158,4 @@ async function openNavDrawer() {
   });
 }
 
-window.addEventListener('hashchange', () => closeDrawer(true));
+window.addEventListener('socle:route', () => closeDrawer(true));
